@@ -320,18 +320,17 @@ export function App() {
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-xs text-white uppercase tracking-wider">Acceso & Gestión</h4>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Panel administrativo para gestión de inventario y cotizaciones en tiempo real.
-              </p>
-              <a
-                href="/admin"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-orange-400 hover:text-orange-300 hover:underline mt-1 cursor-pointer"
-              >
-                🔐 Acceder como Administrador (Nueva Pestaña) ↗
-              </a>
+              <h4 className="font-bold text-xs text-white uppercase tracking-wider">Atención & Entregas</h4>
+              <div className="space-y-1.5 text-xs text-slate-300">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-orange-400 shrink-0" />
+                  <span>Entregas en sede o a domicilio en Cali</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Truck className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Atención y despachos de Lunes a Sábado</span>
+                </div>
+              </div>
             </div>
 
           </div>

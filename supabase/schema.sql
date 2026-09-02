@@ -1,23 +1,31 @@
--- Execute this script in Supabase SQL Editor before enabling the admin panel.
--- Create the administrator first in Authentication > Users, then run the final INSERT
--- with that user's UUID.
+-- ==============================================================================
+-- SCRIPT DE CONFIGURACIÓN DE BASE DE DATOS Y POLÍTICAS (SUPABASE)
+-- Copia y pega este script completo en el SQL Editor de tu panel de Supabase
+-- ==============================================================================
 
-create table if not exists public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  role text not null default 'customer' check (role in ('admin', 'customer')),
-  created_at timestamptz not null default now()
+-- 1. Tabla de Categorías
+create table if not exists public.categories (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
+  slug text not null unique,
+  icon text,
+  created_at timestamptz default now()
 );
 
-create or replace function public.is_admin()
-returns boolean
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select exists (select 1 from public.profiles where id = auth.uid() and role = 'admin');
-$$;
+-- 2. Tabla de Productos
+create table if not exists public.products (
+  id uuid primary key default gen_random_uuid(),
+  category_id uuid references public.categories(id) on delete set null,
+  name text not null,
+  description text,
+  price numeric(10, 2) not null check (price >= 0),
+  image_url text,
+  in_stock boolean default true,
+  featured boolean default false,
+  created_at timestamptz default now()
+);
 
+-- 3. Tabla de Cotizaciones / Órdenes
 create table if not exists public.orders (
   id uuid primary key default gen_random_uuid(),
   customer_name text not null,
@@ -30,14 +38,61 @@ create table if not exists public.orders (
   created_at timestamptz not null default now()
 );
 
-alter table public.profiles enable row level security;
-alter table public.orders enable row level security;
+-- 4. Habilitar Row Level Security (RLS)
+alter table public.categories enable row level security;
 alter table public.products enable row level security;
+alter table public.orders enable row level security;
 
-create policy "admins read profiles" on public.profiles for select using (public.is_admin());
-create policy "customers create quotations" on public.orders for insert with check (true);
-create policy "admins read orders" on public.orders for select using (public.is_admin());
-create policy "admins manage products" on public.products for all using (public.is_admin()) with check (public.is_admin());
+-- 5. Eliminar políticas previas para evitar duplicados
+drop policy if exists "permitir lectura publica categorias" on public.categories;
+drop policy if exists "permitir lectura publica productos" on public.products;
+drop policy if exists "permitir crud productos" on public.products;
+drop policy if exists "admins manage products" on public.products;
+drop policy if exists "permitir insertar cotizaciones" on public.orders;
+drop policy if exists "customers create quotations" on public.orders;
+drop policy if exists "permitir lectura ordenes" on public.orders;
+drop policy if exists "admins read orders" on public.orders;
 
--- Replace the UUID with the Auth user id of your administrator.
--- insert into public.profiles (id, role) values ('00000000-0000-0000-0000-000000000000', 'admin');
+-- 6. Políticas de Acceso (Permitir lectura y administración en el catálogo)
+create policy "permitir lectura publica categorias" on public.categories 
+  for select using (true);
+
+create policy "permitir lectura publica productos" on public.products 
+  for select using (true);
+
+create policy "permitir crud productos" on public.products 
+  for all using (true) with check (true);
+
+create policy "permitir insertar cotizaciones" on public.orders 
+  for insert with check (true);
+
+create policy "permitir lectura ordenes" on public.orders 
+  for select using (true);
+
+-- 7. Configuración del Bucket de Almacenamiento para Imágenes
+insert into storage.buckets (id, name, public)
+values ('product-images', 'product-images', true)
+on conflict (id) do nothing;
+
+drop policy if exists "product images public read" on storage.objects;
+drop policy if exists "product images upload" on storage.objects;
+drop policy if exists "product images delete" on storage.objects;
+
+create policy "product images public read" on storage.objects 
+  for select using (bucket_id = 'product-images');
+
+create policy "product images upload" on storage.objects 
+  for insert with check (bucket_id = 'product-images');
+
+create policy "product images delete" on storage.objects 
+  for delete using (bucket_id = 'product-images');
+
+-- 8. Datos iniciales de categorías (Seed Data)
+insert into public.categories (name, slug, icon) values
+  ('Escritura y Corrección', 'escritura-correccion', '✏️'),
+  ('Cuadernos y Libretas', 'cuadernos-libretas', '📓'),
+  ('Geometría y Dibujo', 'geometria-dibujo', '📐'),
+  ('Arte y Manualidades', 'arte-manualidades', '🎨'),
+  ('Papelería y Archivo', 'papeleria-archivo', '📂'),
+  ('Accesorios Escolares', 'accesorios-escolares', '🎒')
+on conflict (name) do nothing;

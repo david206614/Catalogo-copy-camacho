@@ -64,7 +64,7 @@ Catálogo interactivo de venta y exhibición de útiles escolares y artículos d
 
 ## 🔐 Administración y Roles
 
-1. Accede al panel pulsando el botón **Admin** en el encabezado, el enlace del pie de página o visitando la ruta `/admin`.
+1. Accede al panel de administración visitando directamente la ruta privada `/admin` en tu navegador.
 2. Para habilitar autenticación segura en la nube con Supabase:
    * Crea un usuario en **Authentication > Users** en tu proyecto de Supabase.
    * Ejecuta el script [`supabase/schema.sql`](supabase/schema.sql) en el **SQL Editor** para crear las tablas `profiles` y `orders` con la función `is_admin()`.

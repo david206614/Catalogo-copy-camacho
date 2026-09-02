@@ -193,7 +193,7 @@ export const CartDrawer = () => {
                       onChange={(e) =>
                         setCustomerDetails((prev) => ({ ...prev, name: e.target.value }))
                       }
-                      className="w-full text-xs px-3 py-2 bg-white rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-hidden"
+                      className="w-full text-xs px-3 py-2 bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-hidden font-medium"
                     />
                   </div>
 
@@ -246,7 +246,7 @@ export const CartDrawer = () => {
                         onChange={(e) =>
                           setCustomerDetails((prev) => ({ ...prev, address: e.target.value }))
                         }
-                        className="w-full text-xs px-3 py-2 bg-white rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-hidden"
+                        className="w-full text-xs px-3 py-2 bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-hidden font-medium"
                       />
                     </div>
                   )}
@@ -262,7 +262,7 @@ export const CartDrawer = () => {
                       onChange={(e) =>
                         setCustomerDetails((prev) => ({ ...prev, notes: e.target.value }))
                       }
-                      className="w-full text-xs px-3 py-2 bg-white rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-hidden"
+                      className="w-full text-xs px-3 py-2 bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-hidden font-medium"
                     />
                   </div>
 

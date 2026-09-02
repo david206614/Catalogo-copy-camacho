@@ -196,9 +196,14 @@ export function AdminPanel({
     const newStock = !product.in_stock;
     if (isSupabaseConfigured && !product.id.startsWith('local-')) {
       try {
-        await supabase.from('products').update({ in_stock: newStock }).eq('id', product.id);
-      } catch (err) {
-        console.error('Error actualizando stock:', err);
+        const { error: updateError } = await supabase.from('products').update({ in_stock: newStock }).eq('id', product.id);
+        if (updateError) {
+          setError(`No se pudo actualizar stock: ${updateError.message}. Verifica las políticas RLS en Supabase.`);
+          return;
+        }
+      } catch (err: any) {
+        setError(`Error: ${err.message}`);
+        return;
       }
     }
     // Update locally
@@ -409,7 +414,7 @@ export function AdminPanel({
                       placeholder="Buscar producto por nombre o descripción..."
                       value={productSearch}
                       onChange={(e) => setProductSearch(e.target.value)}
-                      className="w-full pl-9 pr-3 py-1.5 text-xs bg-white rounded-xl border border-slate-200 focus:border-orange-500 outline-hidden"
+                      className="w-full pl-9 pr-3 py-1.5 text-xs bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-orange-500 outline-hidden font-medium"
                     />
                   </div>
 
@@ -541,7 +546,7 @@ export function AdminPanel({
                     placeholder="Buscar por nombre de cliente, dirección o producto..."
                     value={orderSearch}
                     onChange={(e) => setOrderSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs bg-white rounded-xl border border-slate-200 focus:border-orange-500 outline-hidden"
+                    className="w-full pl-9 pr-3 py-2 text-xs bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-orange-500 outline-hidden font-medium"
                   />
                 </div>
 

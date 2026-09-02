@@ -1,4 +1,4 @@
-import { ShoppingBag, Search, MessageCircle, Sparkles, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, Search, MessageCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { formatCOP, sanitizePhoneNumber } from '../lib/whatsapp';
 
