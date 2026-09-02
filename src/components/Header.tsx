@@ -80,7 +80,7 @@ export const Header = ({ searchQuery, setSearchQuery, onOpenAdmin }: HeaderProps
               title="Preguntar directamente por WhatsApp"
             >
               <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-500/20" />
-              <span>WhatsApp</span>
+              <span>WhatsApp jeje</span>
             </a>
 
             {/* Cart Trigger */}
