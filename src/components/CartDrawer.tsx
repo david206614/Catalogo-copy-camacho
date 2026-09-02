@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { formatCOP, generateWhatsAppOrderUrl } from '../lib/whatsapp';
+import { saveQuote } from '../lib/orders';
 import { X, Trash2, Plus, Minus, MessageCircle, ShoppingBag, ArrowRight, Store, Truck } from 'lucide-react';
 
 export const CartDrawer = () => {
@@ -21,7 +22,7 @@ export const CartDrawer = () => {
 
   if (!isCartOpen) return null;
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!customerDetails.name.trim()) {
       setValidationError('Por favor ingresa tu nombre para personalizar el pedido.');
       return;
@@ -32,6 +33,13 @@ export const CartDrawer = () => {
     }
     setValidationError('');
 
+    // The WhatsApp action is a quotation until the store confirms the order.
+    try {
+      await saveQuote(cart, customerDetails, totalPrice);
+    } catch (error) {
+      // A WhatsApp order must still work if the history service is temporarily unavailable.
+      console.warn('No se pudo registrar la cotización:', error);
+    }
     const url = generateWhatsAppOrderUrl(cart, customerDetails);
     window.open(url, '_blank');
   };

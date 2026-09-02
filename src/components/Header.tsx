@@ -1,4 +1,4 @@
-import { ShoppingBag, Search, MessageCircle, Sparkles } from 'lucide-react';
+import { ShoppingBag, Search, MessageCircle, Sparkles, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { formatCOP, sanitizePhoneNumber } from '../lib/whatsapp';
 
@@ -19,21 +19,13 @@ export const Header = ({ searchQuery, setSearchQuery, onOpenAdmin }: HeaderProps
           
           {/* Logo / Brand */}
           <div className="flex items-center gap-3 min-w-max cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr from-orange-500 via-amber-500 to-rose-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20 font-bold text-xl">
-              CC
-            </div>
+            
             <div>
               <div className="flex items-center gap-1.5">
-                <h1 className="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight leading-tight">
-                  Copy Camacho
-                </h1>
-                <span className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800">
-                  <Sparkles className="w-2.5 h-2.5 mr-0.5" /> Útiles
-                </span>
+              
+                
               </div>
-              <p className="text-xs text-slate-500 hidden sm:block font-medium">
-                Catálogo de Útiles Escolares & Papelería
-              </p>
+              
             </div>
           </div>
 
@@ -59,17 +51,17 @@ export const Header = ({ searchQuery, setSearchQuery, onOpenAdmin }: HeaderProps
             </div>
           </div>
 
-          {/* Actions: Direct WhatsApp & Cart Button */}
+          {/* Actions: Admin, WhatsApp & Cart Button */}
           <div className="flex items-center gap-2 sm:gap-3">
             <a
-              href={`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola Copy Camacho! Tengo una consulta sobre sus útiles escolares.')}`}
+              href="/admin"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-full border border-emerald-200/60 transition-colors"
-              title="Preguntar directamente por WhatsApp"
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full border border-slate-200 transition-colors cursor-pointer"
+              title="Abrir Panel de Administración en otra pestaña"
             >
-              <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-500/20" />
-              <span>WhatsApp</span>
+              <ShieldCheck className="w-4 h-4 text-slate-600" />
+              <span className="hidden lg:inline">Admin</span>
             </a>
 
             {onOpenAdmin && (
@@ -80,6 +72,17 @@ export const Header = ({ searchQuery, setSearchQuery, onOpenAdmin }: HeaderProps
                 + Producto
               </button>
             )}
+
+            <a
+              href={`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola Copy Camacho! Tengo una consulta sobre sus útiles escolares.')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-full border border-emerald-200/60 transition-colors"
+              title="Preguntar directamente por WhatsApp"
+            >
+              <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-500/20" />
+              <span>WhatsApp</span>
+            </a>
 
             {/* Cart Trigger */}
             <button

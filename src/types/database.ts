@@ -30,3 +30,15 @@ export interface CustomerDetails {
   address?: string;
   notes?: string;
 }
+
+export interface OrderRecord {
+  id: string;
+  customer_name: string;
+  delivery_method: 'recogida' | 'domicilio';
+  address?: string | null;
+  notes?: string | null;
+  items: CartItem[];
+  total: number;
+  status: 'cotizacion' | 'pedido';
+  created_at: string;
+}

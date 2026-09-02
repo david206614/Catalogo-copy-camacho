@@ -10,7 +10,11 @@ Catálogo interactivo de venta y exhibición de útiles escolares y artículos d
 * **Búsqueda & Filtros en Tiempo Real:** Búsqueda instantánea por nombre o descripción y ordenamiento por precio y destacados.
 * **Carrito de Compras Local:** Gestión de ítems con persistencia en `localStorage`.
 * **Checkout Directo a WhatsApp:** Generación automática de mensaje estructurado con el desglose de productos, cantidades, total en COP y datos del cliente (modalidad en tienda o domicilio).
-* **Integración con Supabase:** Backend serverless en PostgreSQL con Row Level Security (RLS) para lectura pública y gestión ágil de catálogo.
+* **Rol y Panel de Administrador:**
+  * **Gestión de Catálogo:** Agregar nuevos productos (con nombre, precio, categoría, imagen, stock y destacados) y eliminar productos existentes en tiempo real.
+  * **Control de Inventario:** Alternar disponibilidad en stock (En Stock / Agotado) directamente desde el panel.
+  * **Historial de Cotizaciones:** Registro y consulta de todas las solicitudes enviadas a WhatsApp con datos del cliente, método de entrega, desglose de ítems y total exacto en COP.
+* **Integración con Supabase:** Backend serverless en PostgreSQL con Row Level Security (RLS) y fallback local automático para desarrollo y pruebas.
 * **Diseño Mobile-First:** Interfaz moderna y responsiva construida con Tailwind CSS v4.
 
 ---
@@ -55,6 +59,16 @@ Catálogo interactivo de venta y exhibición de útiles escolares y artículos d
    ```bash
    npm run build
    ```
+
+---
+
+## 🔐 Administración y Roles
+
+1. Accede al panel pulsando el botón **Admin** en el encabezado, el enlace del pie de página o visitando la ruta `/admin`.
+2. Para habilitar autenticación segura en la nube con Supabase:
+   * Crea un usuario en **Authentication > Users** en tu proyecto de Supabase.
+   * Ejecuta el script [`supabase/schema.sql`](supabase/schema.sql) en el **SQL Editor** para crear las tablas `profiles` y `orders` con la función `is_admin()`.
+   * En modo local / desarrollo sin conexión, puedes acceder directamente para realizar pruebas.
 
 ---
 

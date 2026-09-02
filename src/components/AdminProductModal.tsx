@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Category, Product } from '../types/database';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { X, Plus, Check } from 'lucide-react';
+import { X, Plus, Check, Sparkles } from 'lucide-react';
 
 interface AdminProductModalProps {
   categories: Category[];
@@ -22,11 +22,23 @@ export const AdminProductModal = ({
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [inStock, setInStock] = useState(true);
+  const [featured, setFeatured] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
   if (!isOpen) return null;
+
+  const resetForm = () => {
+    setName('');
+    setCategoryId(categories[0]?.id || '');
+    setPrice('');
+    setDescription('');
+    setImageUrl('');
+    setInStock(true);
+    setFeatured(false);
+    setError('');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,12 +52,12 @@ export const AdminProductModal = ({
 
     const newProdData: Partial<Product> = {
       name: name.trim(),
-      category_id: categoryId || null,
+      category_id: categoryId || (categories[0]?.id ?? null),
       price: parseFloat(price),
       description: description.trim() || null,
       image_url: imageUrl.trim() || null,
       in_stock: inStock,
-      featured: false,
+      featured: featured,
     };
 
     if (isSupabaseConfigured) {
@@ -62,8 +74,9 @@ export const AdminProductModal = ({
           setSuccess(true);
           setTimeout(() => {
             setSuccess(false);
+            resetForm();
             onClose();
-          }, 1000);
+          }, 800);
         }
       } catch (err: any) {
         setError(err.message || 'Error al guardar en Supabase');
@@ -80,15 +93,16 @@ export const AdminProductModal = ({
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
+        resetForm();
         onClose();
-      }, 1000);
+      }, 800);
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 border border-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 border border-slate-100 my-8">
         
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <div className="flex items-center gap-2">
@@ -98,11 +112,11 @@ export const AdminProductModal = ({
             <div>
               <h2 className="text-base font-bold text-slate-900">Agregar Nuevo Producto</h2>
               <p className="text-[11px] text-slate-500">
-                {isSupabaseConfigured ? 'Se guardará en tu base de datos Supabase' : 'Modo vista previa'}
+                {isSupabaseConfigured ? 'Se guardará en la base de datos Supabase' : 'Modo local'}
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-700">
+          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-700 cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -113,10 +127,10 @@ export const AdminProductModal = ({
             <input
               type="text"
               required
-              placeholder="Ej: Lapicero Kilométrico Negro"
+              placeholder="Ej: Marcadores Sharpie x12 Colores"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden"
+              className="w-full text-xs px-3.5 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden"
             />
           </div>
 
@@ -126,7 +140,7 @@ export const AdminProductModal = ({
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full text-xs px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden"
+                className="w-full text-xs px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden cursor-pointer"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -142,8 +156,8 @@ export const AdminProductModal = ({
                 type="number"
                 required
                 min="0"
-                step="100"
-                placeholder="15000"
+                step="50"
+                placeholder="24500"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 className="w-full text-xs px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden"
@@ -166,30 +180,41 @@ export const AdminProductModal = ({
             <label className="block text-xs font-semibold text-slate-700 mb-1">Descripción / Marca / Detalles</label>
             <textarea
               rows={2}
-              placeholder="Ej: Punta fina 0.7mm, secado ultra rápido..."
+              placeholder="Ej: Tinta permanente de secado rápido, punta fina resistente..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full text-xs px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden resize-none"
             />
           </div>
 
-          <div className="flex items-center gap-2 pt-1">
-            <input
-              type="checkbox"
-              id="inStock"
-              checked={inStock}
-              onChange={(e) => setInStock(e.target.checked)}
-              className="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-500"
-            />
-            <label htmlFor="inStock" className="text-xs font-medium text-slate-700 cursor-pointer">
-              Disponible en stock para entrega inmediata
+          <div className="flex flex-wrap items-center gap-4 pt-1">
+            <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={inStock}
+                onChange={(e) => setInStock(e.target.checked)}
+                className="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-500"
+              />
+              <span>Disponible en stock</span>
+            </label>
+
+            <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={featured}
+                onChange={(e) => setFeatured(e.target.checked)}
+                className="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-500"
+              />
+              <span className="flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-amber-500" /> Destacado en portada
+              </span>
             </label>
           </div>
 
-          {error && <p className="text-xs text-rose-600 bg-rose-50 p-2 rounded-lg">{error}</p>}
+          {error && <p className="text-xs text-rose-600 bg-rose-50 p-2.5 rounded-xl border border-rose-200">{error}</p>}
           {success && (
-            <div className="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 p-2 rounded-lg">
-              <Check className="w-4 h-4" /> Producto guardado correctamente
+            <div className="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
+              <Check className="w-4 h-4" /> ¡Producto agregado correctamente al catálogo!
             </div>
           )}
 
@@ -204,7 +229,7 @@ export const AdminProductModal = ({
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-md shadow-orange-500/20 disabled:opacity-50 cursor-pointer"
+              className="px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-md shadow-orange-500/20 disabled:opacity-50 cursor-pointer transition-all active:scale-95"
             >
               {loading ? 'Guardando...' : 'Guardar Producto'}
             </button>
