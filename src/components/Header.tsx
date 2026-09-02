@@ -61,7 +61,6 @@ export const Header = ({ searchQuery, setSearchQuery, onOpenAdmin }: HeaderProps
               title="Abrir Panel de Administración en otra pestaña"
             >
               <ShieldCheck className="w-4 h-4 text-slate-600" />
-              <span className="hidden lg:inline">Admin</span>
             </a>
 
             {onOpenAdmin && (
