@@ -8,7 +8,7 @@ interface HeaderProps {
   onOpenAdmin?: () => void;
 }
 
-export const Header = ({ searchQuery, setSearchQuery, onOpenAdmin }: HeaderProps) => {
+export const Header = ({ searchQuery, setSearchQuery}: HeaderProps) => {
   const { totalItems, totalPrice, setIsCartOpen } = useCart();
   const phone = sanitizePhoneNumber(import.meta.env.VITE_WHATSAPP_PHONE || '573173312352');
 
@@ -53,24 +53,6 @@ export const Header = ({ searchQuery, setSearchQuery, onOpenAdmin }: HeaderProps
 
           {/* Actions: Admin, WhatsApp & Cart Button */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <a
-              href="/admin"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full border border-slate-200 transition-colors cursor-pointer"
-              title="Abrir Panel de Administración en otra pestaña"
-            >
-              <ShieldCheck className="w-4 h-4 text-slate-600" />
-            </a>
-
-            {onOpenAdmin && (
-              <button
-                onClick={onOpenAdmin}
-                className="hidden lg:inline-flex text-xs font-medium text-slate-600 hover:text-slate-900 px-2.5 py-1.5 rounded-md hover:bg-slate-100 transition-colors cursor-pointer"
-              >
-                + Producto
-              </button>
-            )}
 
             <a
               href={`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola Copy Camacho! Tengo una consulta sobre sus útiles escolares.')}`}
@@ -80,7 +62,7 @@ export const Header = ({ searchQuery, setSearchQuery, onOpenAdmin }: HeaderProps
               title="Preguntar directamente por WhatsApp"
             >
               <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-500/20" />
-              <span>WhatsApp jeje</span>
+              <span>WhatsApp</span>
             </a>
 
             {/* Cart Trigger */}
