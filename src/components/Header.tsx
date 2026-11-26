@@ -5,32 +5,37 @@ import { formatCOP, sanitizePhoneNumber } from '../lib/whatsapp';
 interface HeaderProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  onOpenAdmin?: () => void;
 }
 
-export const Header = ({ searchQuery, setSearchQuery}: HeaderProps) => {
+export const Header = ({ searchQuery, setSearchQuery }: HeaderProps) => {
   const { totalItems, totalPrice, setIsCartOpen } = useCart();
   const phone = sanitizePhoneNumber(import.meta.env.VITE_WHATSAPP_PHONE || '573173312352');
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
-          
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-3 sm:gap-4">
           {/* Logo / Brand */}
-          <div className="flex items-center gap-3 min-w-max cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            
-            <div>
-              <div className="flex items-center gap-1.5">
-              
-                
-              </div>
-              
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex items-center gap-2.5 min-w-max cursor-pointer text-left"
+          >
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#140763] via-indigo-700 to-orange-500 flex items-center justify-center text-white shadow-md font-extrabold text-sm sm:text-base">
+              CC
             </div>
-          </div>
+            <div className="hidden sm:block">
+              <h1 className="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight leading-tight">
+                Copy Camacho
+              </h1>
+              <p className="text-[11px] text-slate-500 font-medium leading-tight">
+                Útiles Escolares &amp; Papelería
+              </p>
+            </div>
+          </button>
 
           {/* Search Bar */}
-          <div className="flex-1 max-w-lg mx-2 sm:mx-4">
+          <div className="flex-1 max-w-lg mx-1 sm:mx-4">
             <div className="relative">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
@@ -38,12 +43,13 @@ export const Header = ({ searchQuery, setSearchQuery}: HeaderProps) => {
                 placeholder="Buscar cuadernos, bolígrafos, colores..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 sm:py-2.5 text-sm bg-slate-100/80 hover:bg-slate-100 focus:bg-white text-slate-900 placeholder-slate-400 rounded-full border border-transparent focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-hidden transition-all"
+                className="w-full pl-10 pr-8 py-2 sm:py-2.5 text-sm bg-slate-100/80 hover:bg-slate-100 focus:bg-white text-slate-900 placeholder-slate-400 rounded-full border border-transparent focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-hidden transition-all"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-full w-4 h-4 flex items-center justify-center cursor-pointer"
+                  aria-label="Limpiar búsqueda"
                 >
                   ✕
                 </button>
@@ -51,9 +57,8 @@ export const Header = ({ searchQuery, setSearchQuery}: HeaderProps) => {
             </div>
           </div>
 
-          {/* Actions: Admin, WhatsApp & Cart Button */}
+          {/* Actions: WhatsApp & Cart Button */}
           <div className="flex items-center gap-2 sm:gap-3">
-
             <a
               href={`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola Copy Camacho! Tengo una consulta sobre sus útiles escolares.')}`}
               target="_blank"
@@ -84,7 +89,6 @@ export const Header = ({ searchQuery, setSearchQuery}: HeaderProps) => {
               </span>
             </button>
           </div>
-
         </div>
       </div>
     </header>

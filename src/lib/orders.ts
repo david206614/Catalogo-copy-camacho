@@ -25,7 +25,8 @@ export async function saveQuote(items: CartItem[], customer: CustomerDetails, to
   };
 
   if (isSupabaseConfigured) {
-    const { data, error } = await supabase.from('orders').insert({
+    // Insert without .select() so anon customers can submit quotes while SELECT on orders remains admin-only via RLS.
+    const { error } = await supabase.from('orders').insert({
       customer_name: record.customer_name,
       delivery_method: record.delivery_method,
       address: record.address,
@@ -33,8 +34,9 @@ export async function saveQuote(items: CartItem[], customer: CustomerDetails, to
       items: record.items,
       total: record.total,
       status: record.status,
-    }).select().single();
-    if (!error && data) return data as OrderRecord;
+    });
+    if (!error) return record;
+    console.warn('Supabase orders insert error, saving locally:', error.message);
   }
 
   localStorage.setItem(LOCAL_ORDERS_KEY, JSON.stringify([record, ...readLocalOrders()]));
@@ -47,4 +49,20 @@ export async function getOrderHistory(): Promise<OrderRecord[]> {
     if (!error && data) return data as OrderRecord[];
   }
   return readLocalOrders();
+}
+
+export async function updateOrderStatus(
+  orderId: string,
+  status: 'cotizacion' | 'pedido'
+): Promise<boolean> {
+  if (isSupabaseConfigured && !orderId.startsWith('local-')) {
+    const { error } = await supabase.from('orders').update({ status }).eq('id', orderId);
+    return !error;
+  }
+
+  const localOrders = readLocalOrders().map((order) =>
+    order.id === orderId ? { ...order, status } : order
+  );
+  localStorage.setItem(LOCAL_ORDERS_KEY, JSON.stringify(localOrders));
+  return true;
 }

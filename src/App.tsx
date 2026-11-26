@@ -10,33 +10,44 @@ import { CartDrawer } from './components/CartDrawer';
 import { AdminPanel } from './components/AdminPanel';
 import { useCart } from './context/CartContext';
 import bannerImg from './assets/banner.jpg';
-import { 
-  ShoppingBag, 
-  MessageCircle, 
-  Truck, 
-  CheckCircle2, 
-  Phone, 
-  MapPin, 
-  SlidersHorizontal 
+import {
+  ShoppingBag,
+  MessageCircle,
+  Truck,
+  CheckCircle2,
+  Phone,
+  MapPin,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 export function App() {
-  const isAdminRoute = window.location.pathname.replace(/\/+$/, '') === '/admin';
+  const normalizedPath = window.location.pathname.replace(/\/+$/, '');
+  const isAdminRoute =
+    normalizedPath.endsWith('/admin') ||
+    window.location.hash.replace(/\/+$/, '') === '#/admin';
+
   const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [categories, setCategories] = useState<Category[]>(
+    isSupabaseConfigured ? [] : INITIAL_CATEGORIES
+  );
+  const [products, setProducts] = useState<Product[]>(
+    isSupabaseConfigured ? [] : INITIAL_PRODUCTS
+  );
+  const [loadingCatalog, setLoadingCatalog] = useState(isSupabaseConfigured);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'name'>('featured');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const { setIsCartOpen, totalItems } = useCart();
-  const phone = import.meta.env.VITE_WHATSAPP_PHONE || '573000000000';
+  const phone = import.meta.env.VITE_WHATSAPP_PHONE || '573173312352';
 
-  // Load from Supabase if configured
   useEffect(() => {
     async function loadData() {
-      if (!isSupabaseConfigured) return;
+      if (!isSupabaseConfigured) {
+        setLoadingCatalog(false);
+        return;
+      }
 
       try {
         const [catRes, prodRes] = await Promise.all([
@@ -44,27 +55,39 @@ export function App() {
           supabase.from('products').select('*').order('created_at', { ascending: false }),
         ]);
 
-        if (catRes.data && catRes.data.length > 0) {
-          setCategories(catRes.data);
-        }
-        if (prodRes.data && prodRes.data.length > 0) {
-          setProducts(prodRes.data);
-        }
+        setCategories(catRes.data && catRes.data.length > 0 ? catRes.data : INITIAL_CATEGORIES);
+        setProducts(prodRes.data && prodRes.data.length > 0 ? prodRes.data : INITIAL_PRODUCTS);
       } catch (err) {
         console.warn('Usando catálogo inicial:', err);
+        setCategories(INITIAL_CATEGORIES);
+        setProducts(INITIAL_PRODUCTS);
+      } finally {
+        setLoadingCatalog(false);
       }
     }
 
     loadData();
   }, []);
 
-  const handleProductAdded = (newProd: Product) => {
+  // Open product modal automatically when visiting a shared ?product=<id> link
+  useEffect(() => {
+    if (products.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    const sharedProductId = params.get('product');
+    if (!sharedProductId) return;
+    const match = products.find((p) => p.id === sharedProductId);
+    if (match) {
+      setSelectedProduct(match);
+    }
+  }, [products]);
+
+  const handleProductSaved = (savedProd: Product) => {
     setProducts((prev) => {
-      const exists = prev.some((p) => p.id === newProd.id);
+      const exists = prev.some((p) => p.id === savedProd.id);
       if (exists) {
-        return prev.map((p) => (p.id === newProd.id ? newProd : p));
+        return prev.map((p) => (p.id === savedProd.id ? savedProd : p));
       }
-      return [newProd, ...prev];
+      return [savedProd, ...prev];
     });
   };
 
@@ -72,16 +95,27 @@ export function App() {
     setProducts((prev) => prev.filter((product) => product.id !== id));
   };
 
-  // Filter and sort products
+  const handleCategoryAdded = (newCat: Category) => {
+    setCategories((prev) => [...prev, newCat].sort((a, b) => a.name.localeCompare(b.name)));
+  };
+
+  const handleCategoryDeleted = (id: string) => {
+    setCategories((prev) => prev.filter((cat) => cat.id !== id));
+    setProducts((prev) =>
+      prev.map((p) => (p.category_id === id ? { ...p, category_id: null } : p))
+    );
+    if (selectedCategoryId === id) {
+      setSelectedCategoryId(null);
+    }
+  };
+
   const filteredProducts = useMemo(() => {
     let list = [...products];
 
-    // Filter by Category
     if (selectedCategoryId) {
       list = list.filter((p) => p.category_id === selectedCategoryId);
     }
 
-    // Filter by Search Query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       list = list.filter(
@@ -91,7 +125,6 @@ export function App() {
       );
     }
 
-    // Sorting
     switch (sortBy) {
       case 'price-asc':
         list.sort((a, b) => a.price - b.price);
@@ -111,18 +144,19 @@ export function App() {
     return list;
   }, [products, selectedCategoryId, searchQuery, sortBy]);
 
-  // If opened directly as /admin (e.g. in a new tab)
   if (isAdminRoute) {
     return (
       <AdminPanel
         isOpen={true}
         onClose={() => {
-          window.location.href = '/';
+          window.location.href = import.meta.env.BASE_URL;
         }}
         categories={categories}
         products={products}
-        onProductAdded={handleProductAdded}
+        onProductSaved={handleProductSaved}
         onProductDeleted={handleProductDeleted}
+        onCategoryAdded={handleCategoryAdded}
+        onCategoryDeleted={handleCategoryDeleted}
         standalone={true}
       />
     );
@@ -130,18 +164,11 @@ export function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#140763] text-slate-100">
-      
-      {/* Main Header */}
-      <Header
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onOpenAdmin={() => setIsAdminOpen(true)}
-      />
+      <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
-      {/* Hero Banner Section (Occupies full container seamlessly with #140763 background) */}
+      {/* Hero Banner Section */}
       <section className="w-full bg-[#140763] pt-4 sm:pt-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
           <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/50 border border-white/10 bg-[#140763]">
             <img
               src={bannerImg}
@@ -150,7 +177,6 @@ export function App() {
             />
           </div>
 
-          {/* Value props pill bar */}
           <div className="mt-3.5 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-slate-100 bg-white/10 backdrop-blur-md p-3 sm:px-5 rounded-2xl border border-white/15 shadow-lg">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -158,28 +184,29 @@ export function App() {
             </div>
             <div className="flex items-center gap-1.5">
               <Truck className="w-4 h-4 text-orange-400 shrink-0" />
-              <span>Domicilios en Cali & Recogida UNIAJC</span>
+              <span>Domicilios en Cali &amp; Recogida UNIAJC</span>
             </div>
             <div className="flex items-center gap-1.5">
               <MessageCircle className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>Atención y pedidos por WhatsApp</span>
             </div>
           </div>
-
         </div>
       </section>
 
       {/* Main Catalog Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
-        
-        {/* Category Filters Bar */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-extrabold text-orange-400 uppercase tracking-wider">
               Categorías
             </h3>
             <span className="text-xs text-slate-300 font-medium">
-              {filteredProducts.length} {filteredProducts.length === 1 ? 'producto' : 'productos'}
+              {loadingCatalog
+                ? 'Cargando catálogo...'
+                : `${filteredProducts.length} ${
+                    filteredProducts.length === 1 ? 'producto' : 'productos'
+                  }`}
             </span>
           </div>
 
@@ -190,7 +217,6 @@ export function App() {
           />
         </div>
 
-        {/* Filter controls / Sorting */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
           <div className="text-xs font-medium text-slate-200">
             {selectedCategoryId
@@ -204,24 +230,54 @@ export function App() {
             <span className="text-xs text-slate-300 font-medium">Ordenar por:</span>
             <select
               value={sortBy}
-              onChange={(e: any) => setSortBy(e.target.value)}
+              onChange={(e) =>
+                setSortBy(e.target.value as 'featured' | 'price-asc' | 'price-desc' | 'name')
+              }
               className="text-xs font-semibold bg-white/10 text-white border border-white/20 rounded-lg px-2.5 py-1.5 outline-hidden focus:border-orange-400 backdrop-blur-md cursor-pointer"
             >
-              <option value="featured" className="bg-slate-900 text-white">Destacados</option>
-              <option value="price-asc" className="bg-slate-900 text-white">Menor precio</option>
-              <option value="price-desc" className="bg-slate-900 text-white">Mayor precio</option>
-              <option value="name" className="bg-slate-900 text-white">Nombre (A-Z)</option>
+              <option value="featured" className="bg-slate-900 text-white">
+                Destacados
+              </option>
+              <option value="price-asc" className="bg-slate-900 text-white">
+                Menor precio
+              </option>
+              <option value="price-desc" className="bg-slate-900 text-white">
+                Mayor precio
+              </option>
+              <option value="name" className="bg-slate-900 text-white">
+                Nombre (A-Z)
+              </option>
             </select>
           </div>
         </div>
 
-        {/* Product Grid */}
-        {filteredProducts.length === 0 ? (
+        {/* Product Grid / Skeleton */}
+        {loadingCatalog ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="rounded-2xl bg-white/10 border border-white/10 overflow-hidden animate-pulse"
+              >
+                <div className="aspect-4/3 bg-white/10" />
+                <div className="p-4 space-y-2.5">
+                  <div className="h-4 bg-white/15 rounded w-3/4" />
+                  <div className="h-3 bg-white/10 rounded w-1/2" />
+                  <div className="pt-3 flex justify-between items-center">
+                    <div className="h-5 bg-white/15 rounded w-20" />
+                    <div className="h-8 bg-white/15 rounded-xl w-20" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredProducts.length === 0 ? (
           <div className="bg-white/10 backdrop-blur-md rounded-3xl border border-white/15 p-12 text-center space-y-3 shadow-lg">
             <div className="text-4xl">🔍</div>
             <h3 className="font-bold text-base text-white">No encontramos productos</h3>
             <p className="text-xs text-slate-300 max-w-sm mx-auto">
-              No hay artículos que coincidan con los filtros seleccionados. Probá buscando otra categoría o término.
+              No hay artículos que coincidan con los filtros seleccionados. Intenta buscando otra
+              categoría o término.
             </p>
             <button
               onClick={() => {
@@ -245,7 +301,6 @@ export function App() {
             ))}
           </div>
         )}
-
       </main>
 
       {/* Floating Cart Button for Mobile */}
@@ -270,20 +325,26 @@ export function App() {
       <ProductModal
         product={selectedProduct}
         categories={categories}
-        onClose={() => setSelectedProduct(null)}
+        onClose={() => {
+          setSelectedProduct(null);
+          if (window.location.search.includes('product=')) {
+            window.history.replaceState({}, '', `${window.location.pathname}${window.location.hash}`);
+          }
+        }}
       />
 
       <CartDrawer />
 
-      {/* Admin Panel Modal */}
       {isAdminOpen && (
         <AdminPanel
           isOpen={isAdminOpen}
           onClose={() => setIsAdminOpen(false)}
           categories={categories}
           products={products}
-          onProductAdded={handleProductAdded}
+          onProductSaved={handleProductSaved}
           onProductDeleted={handleProductDeleted}
+          onCategoryAdded={handleCategoryAdded}
+          onCategoryDeleted={handleCategoryDeleted}
           standalone={false}
         />
       )}
@@ -292,7 +353,6 @@ export function App() {
       <footer className="bg-[#0b0338] border-t border-white/10 mt-16 py-12 text-slate-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
             <div>
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-orange-500 text-white font-bold flex items-center justify-center text-sm shadow-md">
@@ -301,12 +361,15 @@ export function App() {
                 <span className="font-extrabold text-base text-white">Copy Camacho</span>
               </div>
               <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-                Catálogo virtual de útiles escolares, artículos de papelería e impresiones. Pedidos rápidos con confirmación directa por WhatsApp.
+                Catálogo virtual de útiles escolares, artículos de papelería e impresiones. Pedidos
+                rápidos con confirmación directa por WhatsApp.
               </p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-xs text-white uppercase tracking-wider">Contacto & Ubicación</h4>
+              <h4 className="font-bold text-xs text-white uppercase tracking-wider">
+                Contacto &amp; Ubicación
+              </h4>
               <div className="space-y-1.5 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-orange-400 shrink-0" />
@@ -320,7 +383,9 @@ export function App() {
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-xs text-white uppercase tracking-wider">Atención & Entregas</h4>
+              <h4 className="font-bold text-xs text-white uppercase tracking-wider">
+                Atención &amp; Entregas
+              </h4>
               <div className="space-y-1.5 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-orange-400 shrink-0" />
@@ -332,7 +397,6 @@ export function App() {
                 </div>
               </div>
             </div>
-
           </div>
 
           <div className="mt-8 pt-6 border-t border-white/10 text-center text-xs text-slate-400">
@@ -340,7 +404,6 @@ export function App() {
           </div>
         </div>
       </footer>
-
     </div>
   );
 }

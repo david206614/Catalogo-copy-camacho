@@ -1,31 +1,36 @@
-import { useState, useRef, type DragEvent, type ChangeEvent } from 'react';
+import { useState, useRef, useEffect, type DragEvent, type ChangeEvent } from 'react';
 import type { Category, Product } from '../types/database';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { uploadProductImage, fileToDataUrl } from '../lib/storage';
-import { 
-  X, 
-  Plus, 
-  Check, 
-  Sparkles, 
-  UploadCloud, 
-  Trash2, 
+import {
+  X,
+  Plus,
+  Pencil,
+  Check,
+  Sparkles,
+  UploadCloud,
+  Trash2,
   Link as LinkIcon,
-  Loader2
+  Loader2,
 } from 'lucide-react';
 
 interface AdminProductModalProps {
   categories: Category[];
   isOpen: boolean;
   onClose: () => void;
-  onProductAdded: (newProduct: Product) => void;
+  onProductSaved: (savedProduct: Product) => void;
+  editingProduct?: Product | null;
 }
 
 export const AdminProductModal = ({
   categories,
   isOpen,
   onClose,
-  onProductAdded,
+  onProductSaved,
+  editingProduct = null,
 }: AdminProductModalProps) => {
+  const isEditing = Boolean(editingProduct);
+
   const [name, setName] = useState('');
   const [categoryId, setCategoryId] = useState(categories[0]?.id || '');
   const [price, setPrice] = useState('');
@@ -33,6 +38,7 @@ export const AdminProductModal = ({
   const [imageUrl, setImageUrl] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [imageRemoved, setImageRemoved] = useState(false);
   const [useManualUrl, setUseManualUrl] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [inStock, setInStock] = useState(true);
@@ -44,23 +50,45 @@ export const AdminProductModal = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen) return;
 
-  const resetForm = () => {
-    setName('');
-    setCategoryId(categories[0]?.id || '');
-    setPrice('');
-    setDescription('');
-    setImageUrl('');
-    setImageFile(null);
-    setImagePreview('');
-    setUseManualUrl(false);
+    if (editingProduct) {
+      setName(editingProduct.name);
+      setCategoryId(editingProduct.category_id || categories[0]?.id || '');
+      setPrice(String(editingProduct.price));
+      setDescription(editingProduct.description || '');
+      setImageUrl(editingProduct.image_url || '');
+      setImagePreview(editingProduct.image_url || '');
+      setImageFile(null);
+      setImageRemoved(false);
+      setUseManualUrl(false);
+      setInStock(editingProduct.in_stock);
+      setFeatured(Boolean(editingProduct.featured));
+    } else {
+      setName('');
+      setCategoryId(categories[0]?.id || '');
+      setPrice('');
+      setDescription('');
+      setImageUrl('');
+      setImageFile(null);
+      setImagePreview('');
+      setImageRemoved(false);
+      setUseManualUrl(false);
+      setInStock(true);
+      setFeatured(false);
+    }
+
     setIsDragging(false);
-    setInStock(true);
-    setFeatured(false);
     setError('');
+    setSuccess(false);
     setUploadStatus('');
-  };
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [isOpen, editingProduct, categories]);
+
+  if (!isOpen) return null;
 
   const handleFileSelect = async (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -75,6 +103,7 @@ export const AdminProductModal = ({
 
     setError('');
     setImageFile(file);
+    setImageRemoved(false);
     try {
       const preview = await fileToDataUrl(file);
       setImagePreview(preview);
@@ -112,6 +141,8 @@ export const AdminProductModal = ({
   const removeSelectedImage = () => {
     setImageFile(null);
     setImagePreview('');
+    setImageUrl('');
+    setImageRemoved(true);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -128,67 +159,78 @@ export const AdminProductModal = ({
     setError('');
     setUploadStatus('Procesando imagen...');
 
-    let finalImageUrl: string | null = null;
+    let finalImageUrl: string | null = editingProduct?.image_url ?? null;
 
     try {
-      // 1. Resolve image URL
-      if (!useManualUrl && imageFile) {
+      if (useManualUrl) {
+        finalImageUrl = imageUrl.trim() || null;
+      } else if (imageFile) {
         setUploadStatus('Optimizando y subiendo imagen...');
         finalImageUrl = await uploadProductImage(imageFile);
-      } else if (useManualUrl && imageUrl.trim()) {
-        finalImageUrl = imageUrl.trim();
+      } else if (imageRemoved) {
+        finalImageUrl = null;
       }
 
-      setUploadStatus('Guardando producto...');
+      setUploadStatus(isEditing ? 'Actualizando producto...' : 'Guardando producto...');
 
-      const newProdData: Partial<Product> = {
+      const productPayload = {
         name: name.trim(),
         category_id: categoryId || (categories[0]?.id ?? null),
         price: parseFloat(price),
         description: description.trim() || null,
         image_url: finalImageUrl,
         in_stock: inStock,
-        featured: featured,
+        featured,
       };
 
-      if (isSupabaseConfigured) {
-        const { data, error: insertError } = await supabase
-          .from('products')
-          .insert([newProdData])
-          .select()
-          .single();
+      if (isSupabaseConfigured && !(editingProduct && editingProduct.id.startsWith('local-'))) {
+        const query = editingProduct
+          ? supabase
+              .from('products')
+              .update(productPayload)
+              .eq('id', editingProduct.id)
+              .select()
+              .single()
+          : supabase
+              .from('products')
+              .insert([productPayload])
+              .select()
+              .single();
 
-        if (insertError) {
-          if (insertError.code === '42501') {
-            throw new Error('Permisos RLS bloqueados en Supabase: Ejecuta el script supabase/schema.sql en el SQL Editor de Supabase para habilitar la creación de productos.');
+        const { data, error: saveError } = await query;
+
+        if (saveError) {
+          if (saveError.code === '42501') {
+            throw new Error(
+              'Permisos RLS bloqueados en Supabase: verifica que hayas iniciado sesión con tu usuario de Supabase Auth y ejecutado supabase/schema.sql.'
+            );
           }
-          throw insertError;
+          throw saveError;
         }
         if (data) {
-          onProductAdded(data);
+          onProductSaved(data as Product);
           setSuccess(true);
           setTimeout(() => {
             setSuccess(false);
-            resetForm();
             onClose();
-          }, 800);
+          }, 700);
         }
       } else {
-        // Local state fallback
         const localProduct: Product = {
-          id: `local-${Date.now()}`,
-          ...(newProdData as any),
+          id: editingProduct?.id || `local-${Date.now()}`,
+          ...productPayload,
+          created_at: editingProduct?.created_at || new Date().toISOString(),
         };
-        onProductAdded(localProduct);
+        onProductSaved(localProduct);
         setSuccess(true);
         setTimeout(() => {
           setSuccess(false);
-          resetForm();
           onClose();
-        }, 800);
+        }, 700);
       }
-    } catch (err: any) {
-      setError(err.message || 'Error al guardar el producto');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error al guardar el producto';
+      setError(message);
     } finally {
       setLoading(false);
       setUploadStatus('');
@@ -198,21 +240,24 @@ export const AdminProductModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
       <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 border border-slate-100 my-8">
-        
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
-              <Plus className="w-5 h-5" />
+              {isEditing ? <Pencil className="w-4 h-4" /> : <Plus className="w-5 h-5" />}
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">Agregar Nuevo Producto</h2>
+              <h2 className="text-base font-bold text-slate-900">
+                {isEditing ? 'Editar Producto' : 'Agregar Nuevo Producto'}
+              </h2>
               <p className="text-[11px] text-slate-500">
-                {isSupabaseConfigured ? 'Se guardará en la base de datos Supabase' : 'Modo local de pruebas'}
+                {isSupabaseConfigured
+                  ? 'Los cambios se sincronizan con Supabase'
+                  : 'Modo local de pruebas'}
               </p>
             </div>
           </div>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="p-1 text-slate-400 hover:text-slate-700 cursor-pointer rounded-lg hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -221,7 +266,9 @@ export const AdminProductModal = ({
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Nombre del producto *</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Nombre del producto *
+            </label>
             <input
               type="text"
               required
@@ -249,7 +296,9 @@ export const AdminProductModal = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Precio (COP) *</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Precio (COP) *
+              </label>
               <input
                 type="number"
                 required
@@ -272,8 +321,9 @@ export const AdminProductModal = ({
               <button
                 type="button"
                 onClick={() => {
-                  setUseManualUrl(!useManualUrl);
-                  removeSelectedImage();
+                  setUseManualUrl((prev) => !prev);
+                  setImageFile(null);
+                  if (fileInputRef.current) fileInputRef.current.value = '';
                 }}
                 className="text-[11px] text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1 cursor-pointer"
               >
@@ -294,7 +344,10 @@ export const AdminProductModal = ({
                 type="url"
                 placeholder="https://images.unsplash.com/..."
                 value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
+                onChange={(e) => {
+                  setImageUrl(e.target.value);
+                  setImageRemoved(false);
+                }}
                 className="w-full text-xs px-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden font-medium"
               />
             ) : (
@@ -315,8 +368,8 @@ export const AdminProductModal = ({
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={`border-2 border-dashed rounded-2xl p-4 text-center cursor-pointer transition-all ${
-                      isDragging 
-                        ? 'border-orange-500 bg-orange-50/70 scale-[0.99]' 
+                      isDragging
+                        ? 'border-orange-500 bg-orange-50/70 scale-[0.99]'
                         : 'border-slate-200 hover:border-orange-400 hover:bg-orange-50/20 bg-slate-50/60'
                     }`}
                   >
@@ -339,10 +392,10 @@ export const AdminProductModal = ({
                     />
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-semibold text-slate-800 truncate">
-                        {imageFile?.name || 'Imagen seleccionada'}
+                        {imageFile?.name || 'Imagen actual del producto'}
                       </p>
                       <p className="text-[11px] text-slate-400">
-                        {imageFile ? `${(imageFile.size / 1024).toFixed(1)} KB` : 'Listo para subir'}
+                        {imageFile ? `${(imageFile.size / 1024).toFixed(1)} KB` : 'Guardada en catálogo'}
                       </p>
                       <button
                         type="button"
@@ -367,7 +420,9 @@ export const AdminProductModal = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Descripción / Marca / Detalles</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Descripción / Marca / Detalles
+            </label>
             <textarea
               rows={2}
               placeholder="Ej: Tinta permanente de secado rápido, punta fina resistente..."
@@ -401,10 +456,17 @@ export const AdminProductModal = ({
             </label>
           </div>
 
-          {error && <p className="text-xs text-rose-600 bg-rose-50 p-2.5 rounded-xl border border-rose-200">{error}</p>}
+          {error && (
+            <p className="text-xs text-rose-600 bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+              {error}
+            </p>
+          )}
           {success && (
             <div className="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
-              <Check className="w-4 h-4" /> ¡Producto agregado correctamente al catálogo!
+              <Check className="w-4 h-4" />{' '}
+              {isEditing
+                ? '¡Producto actualizado correctamente!'
+                : '¡Producto agregado correctamente al catálogo!'}
             </div>
           )}
 
@@ -427,13 +489,14 @@ export const AdminProductModal = ({
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   {uploadStatus || 'Guardando...'}
                 </>
+              ) : isEditing ? (
+                'Guardar Cambios'
               ) : (
                 'Guardar Producto'
               )}
             </button>
           </div>
         </form>
-
       </div>
     </div>
   );

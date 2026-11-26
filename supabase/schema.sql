@@ -43,31 +43,44 @@ alter table public.categories enable row level security;
 alter table public.products enable row level security;
 alter table public.orders enable row level security;
 
--- 5. Eliminar políticas previas para evitar duplicados
+-- 5. Eliminar políticas previas para mantener el script idempotente
+drop policy if exists "Lectura pública de categorías" on public.categories;
 drop policy if exists "permitir lectura publica categorias" on public.categories;
+drop policy if exists "admins manage categories" on public.categories;
+
+drop policy if exists "Lectura pública de productos" on public.products;
 drop policy if exists "permitir lectura publica productos" on public.products;
 drop policy if exists "permitir crud productos" on public.products;
 drop policy if exists "admins manage products" on public.products;
+
 drop policy if exists "permitir insertar cotizaciones" on public.orders;
 drop policy if exists "customers create quotations" on public.orders;
 drop policy if exists "permitir lectura ordenes" on public.orders;
 drop policy if exists "admins read orders" on public.orders;
+drop policy if exists "admins manage orders" on public.orders;
 
--- 6. Políticas de Acceso (Permitir lectura y administración en el catálogo)
-create policy "permitir lectura publica categorias" on public.categories 
+-- 6. Políticas de Acceso (Catálogo público + Administración solo para autenticados)
+-- Categorías: lectura pública, escritura solo admin autenticado
+create policy "permitir lectura publica categorias" on public.categories
   for select using (true);
 
-create policy "permitir lectura publica productos" on public.products 
+create policy "admins manage categories" on public.categories
+  for all to authenticated using (true) with check (true);
+
+-- Productos: lectura pública, escritura solo admin autenticado
+create policy "permitir lectura publica productos" on public.products
   for select using (true);
 
-create policy "permitir crud productos" on public.products 
-  for all using (true) with check (true);
+create policy "admins manage products" on public.products
+  for all to authenticated using (true) with check (true);
 
-create policy "permitir insertar cotizaciones" on public.orders 
-  for insert with check (true);
+-- Órdenes/Cotizaciones: cualquier cliente puede crear una cotización,
+-- pero solo el admin autenticado puede leerlas, actualizarlas o eliminarlas
+create policy "customers create quotations" on public.orders
+  for insert to anon, authenticated with check (true);
 
-create policy "permitir lectura ordenes" on public.orders 
-  for select using (true);
+create policy "admins manage orders" on public.orders
+  for all to authenticated using (true) with check (true);
 
 -- 7. Configuración del Bucket de Almacenamiento para Imágenes
 insert into storage.buckets (id, name, public)
@@ -76,16 +89,20 @@ on conflict (id) do nothing;
 
 drop policy if exists "product images public read" on storage.objects;
 drop policy if exists "product images upload" on storage.objects;
+drop policy if exists "product images update" on storage.objects;
 drop policy if exists "product images delete" on storage.objects;
 
-create policy "product images public read" on storage.objects 
+create policy "product images public read" on storage.objects
   for select using (bucket_id = 'product-images');
 
-create policy "product images upload" on storage.objects 
-  for insert with check (bucket_id = 'product-images');
+create policy "product images upload" on storage.objects
+  for insert to authenticated with check (bucket_id = 'product-images');
 
-create policy "product images delete" on storage.objects 
-  for delete using (bucket_id = 'product-images');
+create policy "product images update" on storage.objects
+  for update to authenticated using (bucket_id = 'product-images') with check (bucket_id = 'product-images');
+
+create policy "product images delete" on storage.objects
+  for delete to authenticated using (bucket_id = 'product-images');
 
 -- 8. Datos iniciales de categorías (Seed Data)
 insert into public.categories (name, slug, icon) values

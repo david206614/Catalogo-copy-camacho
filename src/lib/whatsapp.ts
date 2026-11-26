@@ -1,4 +1,4 @@
-import type { CartItem, CustomerDetails } from '../types/database';
+import type { CartItem, CustomerDetails, Product } from '../types/database';
 
 export function formatCOP(amount: number): string {
   return new Intl.NumberFormat('es-CO', {
@@ -53,4 +53,21 @@ export function generateWhatsAppOrderUrl(
 
   const encodedMessage = encodeURIComponent(message);
   return `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
+}
+
+export function generateWhatsAppProductUrl(
+  product: Product,
+  quantity = 1,
+  phoneNumber: string = import.meta.env.VITE_WHATSAPP_PHONE || '573173312352',
+  storeName: string = import.meta.env.VITE_STORE_NAME || 'Copy Camacho'
+): string {
+  const cleanPhone = sanitizePhoneNumber(phoneNumber);
+  const message =
+    `👋 ¡Hola *${storeName}*! Quisiera consultar disponibilidad de este producto del catálogo:\n\n` +
+    `📦 *${product.name}*\n` +
+    `• Cantidad: ${quantity}\n` +
+    `• Precio unitario: ${formatCOP(product.price)}\n` +
+    `• Subtotal estimado: ${formatCOP(product.price * quantity)}\n\n` +
+    `¿Lo tienen disponible? ¡Gracias!`;
+  return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
 }
