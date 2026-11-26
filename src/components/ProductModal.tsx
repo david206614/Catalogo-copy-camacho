@@ -96,7 +96,7 @@ export const ProductModal = ({ product, categories, onClose }: ProductModalProps
         {/* Modal Info */}
         <div className="p-6">
           {category && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 mb-2">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#1d9bf0]/15 text-[#0b6cb3] mb-2">
               {category.icon} {category.name}
             </span>
           )}
@@ -138,7 +138,7 @@ export const ProductModal = ({ product, categories, onClose }: ProductModalProps
               <button
                 disabled={!product.in_stock}
                 onClick={handleAdd}
-                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-sm shadow-md shadow-orange-500/20 active:scale-95 transition-all cursor-pointer disabled:cursor-not-allowed"
+                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#1d9bf0] hover:bg-[#0d84d6] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-sm shadow-md shadow-[#1d9bf0]/25 active:scale-95 transition-all cursor-pointer disabled:cursor-not-allowed"
               >
                 <ShoppingBag className="w-4 h-4" />
                 <span>

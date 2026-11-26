@@ -58,7 +58,7 @@ export const CartDrawer = () => {
           {/* Header */}
           <div className="p-4 sm:p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-orange-500 text-white flex items-center justify-center shadow-xs">
+              <div className="w-9 h-9 rounded-xl bg-[#1d9bf0] text-white flex items-center justify-center shadow-xs">
                 <ShoppingBag className="w-5 h-5" />
               </div>
               <div>
@@ -93,7 +93,7 @@ export const CartDrawer = () => {
             
             {cart.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-12">
-                <div className="w-20 h-20 rounded-full bg-orange-50 flex items-center justify-center text-orange-400 mb-4">
+                <div className="w-20 h-20 rounded-full bg-[#1d9bf0]/15 flex items-center justify-center text-[#1d9bf0] mb-4">
                   <ShoppingBag className="w-10 h-10" />
                 </div>
                 <h3 className="text-base font-bold text-slate-800">El carrito está vacío</h3>
@@ -134,7 +134,7 @@ export const CartDrawer = () => {
                         <h4 className="text-xs font-bold text-slate-900 truncate">
                           {item.product.name}
                         </h4>
-                        <span className="text-xs font-semibold text-orange-600 block mt-0.5">
+                        <span className="text-xs font-semibold text-[#0d84d6] block mt-0.5">
                           {formatCOP(item.product.price)}
                         </span>
 
@@ -193,7 +193,7 @@ export const CartDrawer = () => {
                       onChange={(e) =>
                         setCustomerDetails((prev) => ({ ...prev, name: e.target.value }))
                       }
-                      className="w-full text-xs px-3 py-2 bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-hidden font-medium"
+                      className="w-full text-xs px-3 py-2 bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-300 focus:border-[#1d9bf0] focus:ring-1 focus:ring-[#1d9bf0] outline-hidden font-medium"
                     />
                   </div>
 
@@ -209,7 +209,7 @@ export const CartDrawer = () => {
                         }
                         className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                           customerDetails.deliveryMethod === 'recogida'
-                            ? 'bg-orange-500 text-white border-orange-500 shadow-xs'
+                            ? 'bg-[#1d9bf0] text-white border-[#1d9bf0] shadow-xs'
                             : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}
                       >
@@ -224,7 +224,7 @@ export const CartDrawer = () => {
                         }
                         className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                           customerDetails.deliveryMethod === 'domicilio'
-                            ? 'bg-orange-500 text-white border-orange-500 shadow-xs'
+                            ? 'bg-[#1d9bf0] text-white border-[#1d9bf0] shadow-xs'
                             : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}
                       >
@@ -246,7 +246,7 @@ export const CartDrawer = () => {
                         onChange={(e) =>
                           setCustomerDetails((prev) => ({ ...prev, address: e.target.value }))
                         }
-                        className="w-full text-xs px-3 py-2 bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-hidden font-medium"
+                        className="w-full text-xs px-3 py-2 bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-300 focus:border-[#1d9bf0] focus:ring-1 focus:ring-[#1d9bf0] outline-hidden font-medium"
                       />
                     </div>
                   )}
@@ -262,7 +262,7 @@ export const CartDrawer = () => {
                       onChange={(e) =>
                         setCustomerDetails((prev) => ({ ...prev, notes: e.target.value }))
                       }
-                      className="w-full text-xs px-3 py-2 bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-hidden font-medium"
+                      className="w-full text-xs px-3 py-2 bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-300 focus:border-[#1d9bf0] focus:ring-1 focus:ring-[#1d9bf0] outline-hidden font-medium"
                     />
                   </div>
 

@@ -163,13 +163,13 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#140763] text-slate-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#061a44] via-[#0e357a] to-[#051230] text-slate-100">
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
       {/* Hero Banner Section */}
-      <section className="w-full bg-[#140763] pt-4 sm:pt-6">
+      <section className="w-full pt-4 sm:pt-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/50 border border-white/10 bg-[#140763]">
+          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/50 border border-white/10 bg-[#071f4e]">
             <img
               src={bannerImg}
               alt="Copy Camacho - Catálogo de Útiles Escolares y Papelería"
@@ -177,13 +177,13 @@ export function App() {
             />
           </div>
 
-          <div className="mt-3.5 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-slate-100 bg-white/10 backdrop-blur-md p-3 sm:px-5 rounded-2xl border border-white/15 shadow-lg">
+          <div className="mt-3.5 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-white bg-gradient-to-r from-[#0e32d8] via-[#1b5df5] to-[#081fae] p-3 sm:px-5 rounded-2xl border border-blue-400/40 shadow-lg">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>Precios transparentes en COP</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Truck className="w-4 h-4 text-orange-400 shrink-0" />
+              <Truck className="w-4 h-4 text-[#1d9bf0] shrink-0" />
               <span>Domicilios en Cali &amp; Recogida UNIAJC</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -198,10 +198,10 @@ export function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-extrabold text-orange-400 uppercase tracking-wider">
+            <h3 className="text-xs font-extrabold text-white uppercase tracking-wider">
               Categorías
             </h3>
-            <span className="text-xs text-slate-300 font-medium">
+            <span className="text-xs text-white font-medium">
               {loadingCatalog
                 ? 'Cargando catálogo...'
                 : `${filteredProducts.length} ${
@@ -218,7 +218,7 @@ export function App() {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-          <div className="text-xs font-medium text-slate-200">
+          <div className="text-xs font-medium text-white">
             {selectedCategoryId
               ? `Mostrando ${categories.find((c) => c.id === selectedCategoryId)?.name}`
               : 'Mostrando todas las categorías'}
@@ -226,14 +226,14 @@ export function App() {
           </div>
 
           <div className="flex items-center gap-2">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-300" />
-            <span className="text-xs text-slate-300 font-medium">Ordenar por:</span>
+            <SlidersHorizontal className="w-3.5 h-3.5 text-white" />
+            <span className="text-xs text-white font-medium">Ordenar por:</span>
             <select
               value={sortBy}
               onChange={(e) =>
                 setSortBy(e.target.value as 'featured' | 'price-asc' | 'price-desc' | 'name')
               }
-              className="text-xs font-semibold bg-white/10 text-white border border-white/20 rounded-lg px-2.5 py-1.5 outline-hidden focus:border-orange-400 backdrop-blur-md cursor-pointer"
+              className="text-xs font-semibold bg-white/10 !text-white border border-white/20 rounded-lg px-2.5 py-1.5 outline-hidden focus:border-[#1d9bf0] backdrop-blur-md cursor-pointer"
             >
               <option value="featured" className="bg-slate-900 text-white">
                 Destacados
@@ -284,7 +284,7 @@ export function App() {
                 setSelectedCategoryId(null);
                 setSearchQuery('');
               }}
-              className="mt-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-full text-xs font-bold shadow-xs cursor-pointer"
+              className="mt-2 px-4 py-2 bg-[#1d9bf0] hover:bg-[#0d84d6] text-white rounded-full text-xs font-bold shadow-xs cursor-pointer"
             >
               Restablecer filtros
             </button>
@@ -308,7 +308,7 @@ export function App() {
         <div className="sm:hidden fixed bottom-5 right-5 z-30">
           <button
             onClick={() => setIsCartOpen(true)}
-            className="flex items-center gap-2.5 px-5 py-3 rounded-full bg-orange-500 text-white font-bold text-sm shadow-2xl active:scale-95 border-2 border-white cursor-pointer"
+            className="flex items-center gap-2.5 px-5 py-3 rounded-full bg-[#1d9bf0] text-white font-bold text-sm shadow-2xl active:scale-95 border-2 border-white cursor-pointer"
           >
             <div className="relative">
               <ShoppingBag className="w-5 h-5" />
@@ -354,13 +354,7 @@ export function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-orange-500 text-white font-bold flex items-center justify-center text-sm shadow-md">
-                  CC
-                </div>
-                <span className="font-extrabold text-base text-white">Copy Camacho</span>
-              </div>
-              <p className="mt-2 text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-300 leading-relaxed">
                 Catálogo virtual de útiles escolares, artículos de papelería e impresiones. Pedidos
                 rápidos con confirmación directa por WhatsApp.
               </p>
@@ -372,7 +366,7 @@ export function App() {
               </h4>
               <div className="space-y-1.5 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-orange-400 shrink-0" />
+                  <MapPin className="w-4 h-4 text-[#1d9bf0] shrink-0" />
                   <span>Cali, Valle del Cauca — Institución Universitaria Antonio José Camacho</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -388,7 +382,7 @@ export function App() {
               </h4>
               <div className="space-y-1.5 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-orange-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#1d9bf0] shrink-0" />
                   <span>Entregas en sede o a domicilio en Cali</span>
                 </div>
                 <div className="flex items-center gap-2">

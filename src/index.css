@@ -8,10 +8,6 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #140763;
+  background-color: #061a44;
   color: #ffffff;
-}
-
-input, textarea, select {
-  color: #0f172a;
 }

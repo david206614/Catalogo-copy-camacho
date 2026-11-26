@@ -13,15 +13,15 @@ export const CategoryFilter = ({
   onSelectCategory,
 }: CategoryFilterProps) => {
   return (
-    <div className="w-full overflow-x-auto py-2 scrollbar-none no-scrollbar">
-      <div className="flex items-center gap-2 min-w-max px-1">
+    <div className="w-full py-2">
+      <div className="flex flex-wrap items-center gap-2 px-1">
         
         {/* All Products pill */}
         <button
           onClick={() => onSelectCategory(null)}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer ${
             selectedCategoryId === null
-              ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10'
+              ? 'bg-[#1d9bf0] text-white shadow-md shadow-[#1d9bf0]/25'
               : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
           }`}
         >
@@ -36,9 +36,9 @@ export const CategoryFilter = ({
             <button
               key={cat.id}
               onClick={() => onSelectCategory(cat.id)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20'
+                  ? 'bg-[#1d9bf0] text-white shadow-md shadow-[#1d9bf0]/25'
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
               }`}
             >

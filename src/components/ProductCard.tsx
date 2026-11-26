@@ -21,7 +21,7 @@ export const ProductCard = ({
   const category = categories.find((c) => c.id === product.category_id);
 
   return (
-    <div className="group flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-xl hover:border-orange-500/30 transition-all duration-300 overflow-hidden">
+    <div className="group flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-xl hover:border-[#1d9bf0]/40 transition-all duration-300 overflow-hidden">
       
       {/* Image container */}
       <div 
@@ -76,7 +76,7 @@ export const ProductCard = ({
         <div>
           <h3 
             onClick={() => onOpenDetails && onOpenDetails(product)}
-            className="font-bold text-slate-900 text-sm sm:text-base line-clamp-2 hover:text-orange-600 transition-colors cursor-pointer"
+            className="font-bold text-slate-900 text-sm sm:text-base line-clamp-2 hover:text-[#0d84d6] transition-colors cursor-pointer"
           >
             {product.name}
           </h3>
@@ -107,7 +107,7 @@ export const ProductCard = ({
                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
                 : inCart
                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 active:scale-95'
-                : 'bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/20 active:scale-95'
+                : 'bg-[#1d9bf0] hover:bg-[#0d84d6] text-white shadow-md shadow-[#1d9bf0]/25 active:scale-95'
             }`}
           >
             {inCart ? (
