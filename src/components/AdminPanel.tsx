@@ -364,7 +364,7 @@ export function AdminPanel({
         {/* Modal Header */}
         <header className="bg-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center font-bold shadow-md shadow-orange-500/30">
+            <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center font-bold shadow-md shadow-blue-500/30">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
@@ -402,7 +402,7 @@ export function AdminPanel({
         {!isAdmin ? (
           <div className="p-6 sm:p-12 overflow-y-auto max-w-md mx-auto w-full space-y-6">
             <div className="text-center space-y-2">
-              <div className="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-xs">
+              <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-xs">
                 <ShieldCheck className="w-7 h-7" />
               </div>
               <h3 className="font-bold text-xl text-slate-900">Ingreso de Administrador</h3>
@@ -425,7 +425,7 @@ export function AdminPanel({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="admin@copycamacho.com"
-                    className="w-full text-xs pl-10 pr-3.5 py-2.5 bg-slate-50 rounded-xl border border-slate-300 focus:bg-white focus:border-orange-500 outline-hidden font-medium text-slate-800"
+                    className="w-full text-xs pl-10 pr-3.5 py-2.5 bg-slate-50 rounded-xl border border-slate-300 focus:bg-white focus:border-blue-500 outline-hidden font-medium text-slate-800"
                   />
                 </div>
               </div>
@@ -443,7 +443,7 @@ export function AdminPanel({
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full text-xs pl-10 pr-3.5 py-2.5 bg-slate-50 rounded-xl border border-slate-300 focus:bg-white focus:border-orange-500 outline-hidden font-medium text-slate-800"
+                    className="w-full text-xs pl-10 pr-3.5 py-2.5 bg-slate-50 rounded-xl border border-slate-300 focus:bg-white focus:border-blue-500 outline-hidden font-medium text-slate-800"
                   />
                 </div>
               </div>
@@ -478,7 +478,7 @@ export function AdminPanel({
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
-                  <Boxes className="w-4 h-4 text-orange-500" />
+                  <Boxes className="w-4 h-4 text-blue-500" />
                   <span>Productos ({products.length})</span>
                 </button>
 
@@ -511,7 +511,7 @@ export function AdminPanel({
                 {activeTab === 'products' && (
                   <button
                     onClick={openCreateProductModal}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
                   >
                     <PackagePlus className="w-4 h-4" />
                     <span>Añadir Producto</span>
@@ -552,7 +552,7 @@ export function AdminPanel({
                       placeholder="Buscar producto por nombre o descripción..."
                       value={productSearch}
                       onChange={(e) => setProductSearch(e.target.value)}
-                      className="w-full pl-9 pr-3 py-1.5 text-xs bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-orange-500 outline-hidden font-medium"
+                      className="w-full pl-9 pr-3 py-1.5 text-xs bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-blue-500 outline-hidden font-medium"
                     />
                   </div>
 
@@ -562,8 +562,8 @@ export function AdminPanel({
                       onClick={() => setOnlyWithoutImage((prev) => !prev)}
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
                         onlyWithoutImage
-                          ? 'bg-amber-500 text-white border-amber-500'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-amber-50'
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-blue-50'
                       }`}
                     >
                       <ImageOff className="w-3.5 h-3.5" />
@@ -587,7 +587,7 @@ export function AdminPanel({
                     {!onlyWithoutImage && (
                       <button
                         onClick={openCreateProductModal}
-                        className="mt-3 px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-bold cursor-pointer"
+                        className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-xl text-xs font-bold cursor-pointer"
                       >
                         Crear primer producto
                       </button>
@@ -621,7 +621,7 @@ export function AdminPanel({
                                 {product.name}
                               </h4>
                               <div className="flex flex-wrap items-center gap-2 mt-0.5 text-[11px] text-slate-500">
-                                <span className="font-semibold text-orange-600">
+                                <span className="font-semibold text-blue-600">
                                   {formatCOP(product.price)}
                                 </span>
                                 {category && (
@@ -630,7 +630,7 @@ export function AdminPanel({
                                   </span>
                                 )}
                                 {!hasImage && (
-                                  <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px] font-semibold">
+                                  <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px] font-semibold">
                                     Sin foto
                                   </span>
                                 )}
@@ -653,7 +653,7 @@ export function AdminPanel({
 
                             <button
                               onClick={() => openEditProductModal(product)}
-                              className="p-2 text-slate-500 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-colors cursor-pointer"
+                              className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors cursor-pointer"
                               title="Editar producto o subir foto"
                             >
                               <Pencil className="w-4 h-4" />
@@ -692,7 +692,7 @@ export function AdminPanel({
                       onChange={(e) => setNewCategoryIcon(e.target.value)}
                       maxLength={4}
                       placeholder="📦"
-                      className="w-full text-center text-sm px-2 py-2 bg-white text-slate-900 rounded-xl border border-slate-200 focus:border-orange-500 outline-hidden"
+                      className="w-full text-center text-sm px-2 py-2 bg-white text-slate-900 rounded-xl border border-slate-200 focus:border-blue-500 outline-hidden"
                     />
                   </div>
 
@@ -706,14 +706,14 @@ export function AdminPanel({
                       value={newCategoryName}
                       onChange={(e) => setNewCategoryName(e.target.value)}
                       placeholder="Ej: Impresiones y Fotocopiado"
-                      className="w-full text-xs px-3 py-2.5 bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-orange-500 outline-hidden font-medium"
+                      className="w-full text-xs px-3 py-2.5 bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-blue-500 outline-hidden font-medium"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={savingCategory}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-xs cursor-pointer disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold shadow-xs cursor-pointer disabled:opacity-50"
                   >
                     <Plus className="w-4 h-4" />
                     <span>{savingCategory ? 'Creando...' : 'Agregar Categoría'}</span>
@@ -775,17 +775,17 @@ export function AdminPanel({
                       {formatCOP(totalRevenue)}
                     </p>
                   </div>
-                  <div className="bg-orange-50/70 p-4 rounded-2xl border border-orange-200/60 flex items-center justify-between">
+                  <div className="bg-blue-50/70 p-4 rounded-2xl border border-blue-200/60 flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-orange-800 font-semibold uppercase">
+                      <p className="text-xs text-blue-800 font-semibold uppercase">
                         Sincronización
                       </p>
-                      <p className="text-xs text-orange-600 mt-1">Tiempo real</p>
+                      <p className="text-xs text-blue-600 mt-1">Tiempo real</p>
                     </div>
                     <button
                       onClick={loadOrders}
                       disabled={loadingOrders}
-                      className="p-2 bg-white rounded-xl text-orange-600 shadow-2xs border border-orange-200 hover:bg-orange-100 cursor-pointer"
+                      className="p-2 bg-white rounded-xl text-blue-600 shadow-2xs border border-blue-200 hover:bg-blue-100 cursor-pointer"
                       title="Refrescar historial"
                     >
                       <RefreshCw className={`w-4 h-4 ${loadingOrders ? 'animate-spin' : ''}`} />
@@ -800,7 +800,7 @@ export function AdminPanel({
                     placeholder="Buscar por nombre de cliente, dirección o producto..."
                     value={orderSearch}
                     onChange={(e) => setOrderSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-orange-500 outline-hidden font-medium"
+                    className="w-full pl-9 pr-3 py-2 text-xs bg-white text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-blue-500 outline-hidden font-medium"
                   />
                 </div>
 
@@ -827,7 +827,7 @@ export function AdminPanel({
                       return (
                         <article
                           key={order.id}
-                          className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-2xs space-y-3 hover:border-orange-300 transition-all"
+                          className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-2xs space-y-3 hover:border-blue-300 transition-all"
                         >
                           <div className="flex flex-wrap items-start justify-between gap-2">
                             <div>
@@ -841,7 +841,7 @@ export function AdminPanel({
                                   className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full cursor-pointer transition-colors ${
                                     isConfirmed
                                       ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
-                                      : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                                      : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
                                   }`}
                                   title="Clic para cambiar estado entre Cotización y Pedido confirmado"
                                 >
@@ -873,7 +873,7 @@ export function AdminPanel({
                             <div className="flex items-center gap-1 font-semibold text-slate-800">
                               {order.delivery_method === 'domicilio' ? (
                                 <>
-                                  <Truck className="w-3.5 h-3.5 text-orange-500" />
+                                  <Truck className="w-3.5 h-3.5 text-blue-500" />
                                   <span>Domicilio en Cali:</span>
                                   <span className="font-normal text-slate-600">
                                     {order.address || 'Sin dirección especificada'}
@@ -899,7 +899,7 @@ export function AdminPanel({
                                   className="flex items-center justify-between text-xs bg-slate-50/80 px-2.5 py-1.5 rounded-lg border border-slate-100"
                                 >
                                   <span className="font-medium text-slate-800 truncate mr-2">
-                                    <strong className="text-orange-600">{item.quantity}×</strong>{' '}
+                                    <strong className="text-blue-600">{item.quantity}×</strong>{' '}
                                     {item.product.name}
                                   </span>
                                   <span className="text-slate-500 text-[11px] font-semibold shrink-0">
@@ -911,7 +911,7 @@ export function AdminPanel({
                           </div>
 
                           {order.notes && (
-                            <p className="text-xs text-slate-500 italic bg-amber-50/60 p-2 rounded-lg border border-amber-200/50">
+                            <p className="text-xs text-slate-500 italic bg-blue-50/60 p-2 rounded-lg border border-blue-200/50">
                               💬 Nota del cliente: "{order.notes}"
                             </p>
                           )}

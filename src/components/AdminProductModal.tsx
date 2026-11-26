@@ -242,7 +242,7 @@ export const AdminProductModal = ({
       <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 border border-slate-100 my-8">
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
               {isEditing ? <Pencil className="w-4 h-4" /> : <Plus className="w-5 h-5" />}
             </div>
             <div>
@@ -275,7 +275,7 @@ export const AdminProductModal = ({
               placeholder="Ej: Marcadores Sharpie x12 Colores"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full text-xs px-3.5 py-2.5 bg-slate-50 text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden transition-all font-medium"
+              className="w-full text-xs px-3.5 py-2.5 bg-slate-50 text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:bg-white focus:border-blue-500 outline-hidden transition-all font-medium"
             />
           </div>
 
@@ -285,7 +285,7 @@ export const AdminProductModal = ({
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full text-xs px-3 py-2 bg-slate-50 text-slate-900 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden cursor-pointer font-medium"
+                className="w-full text-xs px-3 py-2 bg-slate-50 text-slate-900 rounded-xl border border-slate-200 focus:bg-white focus:border-blue-500 outline-hidden cursor-pointer font-medium"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id} className="text-slate-900 bg-white">
@@ -307,7 +307,7 @@ export const AdminProductModal = ({
                 placeholder="24500"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className="w-full text-xs px-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden font-medium"
+                className="w-full text-xs px-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:bg-white focus:border-blue-500 outline-hidden font-medium"
               />
             </div>
           </div>
@@ -325,7 +325,7 @@ export const AdminProductModal = ({
                   setImageFile(null);
                   if (fileInputRef.current) fileInputRef.current.value = '';
                 }}
-                className="text-[11px] text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1 cursor-pointer"
+                className="text-[11px] text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 cursor-pointer"
               >
                 {useManualUrl ? (
                   <>
@@ -348,7 +348,7 @@ export const AdminProductModal = ({
                   setImageUrl(e.target.value);
                   setImageRemoved(false);
                 }}
-                className="w-full text-xs px-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden font-medium"
+                className="w-full text-xs px-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:bg-white focus:border-blue-500 outline-hidden font-medium"
               />
             ) : (
               <div>
@@ -369,11 +369,11 @@ export const AdminProductModal = ({
                     onClick={() => fileInputRef.current?.click()}
                     className={`border-2 border-dashed rounded-2xl p-4 text-center cursor-pointer transition-all ${
                       isDragging
-                        ? 'border-orange-500 bg-orange-50/70 scale-[0.99]'
-                        : 'border-slate-200 hover:border-orange-400 hover:bg-orange-50/20 bg-slate-50/60'
+                        ? 'border-blue-500 bg-blue-50/70 scale-[0.99]'
+                        : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/20 bg-slate-50/60'
                     }`}
                   >
-                    <div className="w-10 h-10 mx-auto rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mb-2 shadow-xs">
+                    <div className="w-10 h-10 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2 shadow-xs">
                       <UploadCloud className="w-5 h-5" />
                     </div>
                     <p className="text-xs font-semibold text-slate-700">
@@ -400,7 +400,7 @@ export const AdminProductModal = ({
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="mt-1 text-[11px] text-orange-600 hover:text-orange-700 font-medium cursor-pointer"
+                        className="mt-1 text-[11px] text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
                       >
                         Cambiar imagen
                       </button>
@@ -428,7 +428,7 @@ export const AdminProductModal = ({
               placeholder="Ej: Tinta permanente de secado rápido, punta fina resistente..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:bg-white focus:border-orange-500 outline-hidden resize-none font-medium"
+              className="w-full text-xs px-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-400 rounded-xl border border-slate-200 focus:bg-white focus:border-blue-500 outline-hidden resize-none font-medium"
             />
           </div>
 
@@ -438,7 +438,7 @@ export const AdminProductModal = ({
                 type="checkbox"
                 checked={inStock}
                 onChange={(e) => setInStock(e.target.checked)}
-                className="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-500 accent-orange-500"
+                className="w-4 h-4 text-blue-500 rounded border-slate-300 focus:ring-blue-500 accent-blue-500"
               />
               <span>Disponible en stock</span>
             </label>
@@ -448,10 +448,10 @@ export const AdminProductModal = ({
                 type="checkbox"
                 checked={featured}
                 onChange={(e) => setFeatured(e.target.checked)}
-                className="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-500 accent-orange-500"
+                className="w-4 h-4 text-blue-500 rounded border-slate-300 focus:ring-blue-500 accent-blue-500"
               />
               <span className="flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-500" /> Destacado en portada
+                <Sparkles className="w-3 h-3 text-blue-500" /> Destacado en portada
               </span>
             </label>
           </div>
@@ -482,7 +482,7 @@ export const AdminProductModal = ({
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-md shadow-orange-500/20 disabled:opacity-50 cursor-pointer transition-all active:scale-95 flex items-center gap-1.5"
+              className="px-5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-500/20 disabled:opacity-50 cursor-pointer transition-all active:scale-95 flex items-center gap-1.5"
             >
               {loading ? (
                 <>
